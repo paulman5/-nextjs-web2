@@ -1,0 +1,38 @@
+{
+  "name": "frontend-web-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@syncfusion/ej2": "^20.4.43",
+    "@syncfusion/ej2-base": "^20.4.42",
+    "@syncfusion/ej2-react-buttons": "^20.4.42",
+    "@syncfusion/ej2-react-documenteditor": "^20.4.54",
+    "@syncfusion/ej2-react-dropdowns": "^20.4.43",
+    "@syncfusion/ej2-react-inputs": "^20.4.42",
+    "@syncfusion/ej2-react-kanban": "^20.4.42",
+    "@syncfusion/ej2-react-popups": "^20.4.43",
+    "@types/node": "20.4.1",
+    "@types/react": "18.2.14",
+    "@types/react-dom": "18.2.6",
+    "antd": "^5.7.2",
+    "autoprefixer": "10.4.14",
+    "eslint": "8.44.0",
+    "eslint-config-next": "13.4.9",
+    "next": "13.4.9",
+    "postcss": "8.4.25",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tailwindcss": "3.3.2",
+    "typescript": "5.1.6"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^2.1.0",
+    "daisyui": "^3.6.5"
+  }
+}

@@ -1,0 +1,16 @@
+.New-document {
+    position: relative;
+    height:40px;
+    width: 195px;
+    background-color: rgb(69, 241, 69);
+    color: black;
+    font-weight: 400;
+    top:2rem;
+    margin-left:5rem;
+}
+
+.New-document:hover {
+    background-color: rgb(103, 226, 76);
+    color: white;
+    transition: 300ms;
+}

@@ -1,0 +1,94 @@
+.Navigation-layout {
+  background-color: rgb(255, 255, 255);
+  display: flex;
+}
+.Home-logo {
+  width: 5%;
+}
+.Navigation-item-layout {
+  width: 84%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
+.Navigation-items {
+  position: relative;
+  display: flex;
+  gap:2rem;
+  left:100px;
+}
+.Navigation-item {
+    width:100px;
+}
+.Navigation-links:hover .Navigation-item{
+    background-color: #707cdd17;
+    color: black;
+}
+.active::before {
+    box-sizing: border-box;
+    content: "";
+    height: 2px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #5c73e7;
+}
+.Application-properties {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  gap:1rem;
+}
+.Notification-counter {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: rgb(34 197 94);
+    height:17px;
+    width:17px;
+    border-radius:50%;
+    font-size:0.6rem;
+    color:white!important;
+    right: 8px;
+    bottom:8px;
+}
+.Notificationsicon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:35px;
+    width: 35px;
+    cursor:pointer;
+}
+.Notificationsicon:hover {
+    background-color: #e8e8e8;
+    border-radius: 50%;
+}
+.Settingsicon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width:35px;
+    cursor: pointer;
+}
+.Settingsicon:hover {
+    background-color: #e8e8e8;
+    border-radius: 50%;
+}
+.Avatar-section {
+  cursor:pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width:40px;
+}
+.Avatar-section:hover {
+    border-radius: 50%;
+    background-color: #e8e8e8;
+    cursor:pointer;
+  }

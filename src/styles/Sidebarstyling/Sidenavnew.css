@@ -1,0 +1,36 @@
+.sidenavnew {
+    z-index: 1;
+}
+
+.ant-layout-sider-children .Navitems {
+    height:0 !important;
+    margin:0 !important;
+    width: 100%;
+}
+.Navitems menu:hover {
+    color:white;
+    background-color: white;
+}
+.customicon span{
+    margin-inline-start: 10px;
+}
+.ant-menu-item:hover svg{
+    fill:white;
+    transition-duration: 200ms;
+}
+.ant-menu-item:focus svg {
+    fill:white;
+}
+.ant-menu-inline-collapsed .customicon span {
+    visibility: hidden;
+}
+.ant-menu-inline-collapsed .customicon svg {
+    display: inline-flex;
+    justify-content: center;
+}
+.ant-menu-inline-collapsed .customicon:focus svg {   
+    fill:white; 
+}
+li.ant-menu-item.ant-menu-item-selected.customicon svg {
+    fill:white;
+}

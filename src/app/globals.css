@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+body {
+  padding: 0;
+  margin: 0;
+  background-color: #f6f7fb;
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+  -webkit-text-size-adjust: 100%;
+  font-feature-settings: normal;
+  font-family: Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  font-variation-settings: normal;
+}
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+.application {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.page-overview {
+  position: fixed;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+.application .application-layers {
+  width: 100%;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  position: relative;
+}
+.application .application-layers .surface {
+  position: absolute;
+  background-color: #eceff8;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+}
+.application.new-layout .application-layers .surface {
+  flex-direction: column;
+}
+.application .application-layers .surface .surface-control {
+  width: 100%;
+}
+.header-divide {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: space-between;
+  padding-left: 4px;
+  padding-right: 24px;
+}
+.header-left {
+  display: flex;
+  height: 100%;
+  width: 30%;
+  justify-self: flex-start;
+}
+.header-right {
+  display: flex;
+  height: 100%;
+  width: 5%;
+  justify-self: flex-end;
+  align-items: center;
+}
+.application .application-layers .first-level {
+  position: absolute;
+  background-color: var(--primary-background-color);
+  color: var(--primary-text-color);
+  z-index: 1000;
+  top: 48px;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  display: flex;
+  -webkit-transition: left 150ms cubic-bezier(0, 0, 0.35, 1);
+  -o-transition: left 150ms cubic-bezier(0, 0, 0.35, 1);
+  transition: left 150ms cubic-bezier(0, 0, 0.35, 1);
+  overflow: hidden;
+}
+.application .application-layers .first-level .sidenav-section {
+  display: flex;
+  z-index: 2;
+  position: absolute;
+  height: 100%;
+  width: 50px;
+  background-color: aqua;
+}
+.application .application-layers .first-level .first-level-content-wrapper {
+  height: 100%;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  position: relative;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  min-width: 0;
+  width: 100%;
+  opacity: 1;
+  visibility: visible;
+}
+
+.main-content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+
