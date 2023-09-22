@@ -2,7 +2,7 @@ import Link from "next/link";
 import { registerLicense } from "@syncfusion/ej2-base";
 
 registerLicense(
-  "Ngo9BigBOggjHTQxAR8/V1NGaF1cXGFCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWXZed3VURmRfVEZzVkQ="
+  "ORg4AjUWIQA/Gnt2VlhhQlJCfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5adEVjXXpfcHFXQ2ld"
 );
 
 export default function page() {

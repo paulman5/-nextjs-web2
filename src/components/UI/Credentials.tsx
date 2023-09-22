@@ -15,7 +15,7 @@ export default function Credentials({ user }: CredentialsProps) {
 
   return (
     <div className="avatar placeholder">
-      <div className="text-black rounded-full w-8 center bg-green-500">
+      <div className=" text-black w-8 h-8 rounded-full bg-green-500 flex justify-center items-center">
         <span>
           <div>{initials}</div>
         </span>
@@ -23,6 +23,7 @@ export default function Credentials({ user }: CredentialsProps) {
     </div>
   );
 }
+
 
 export function CredentialsFetcher() {
   const [user, setUser] = useState(null);

@@ -36,7 +36,7 @@ export default function Draftpage() {
           </div>
         </div>
       ) : (
-        <div className="relative left-28">
+        <div>
           <Documenteditor />
         </div>
       )}

@@ -80,7 +80,6 @@
     border-radius: 50%;
 }
 .Avatar-section {
-  cursor:pointer;
   display: flex;
   align-items: center;
   justify-content: center;
