@@ -9,6 +9,12 @@ import { navData4 } from "../../lib/SidebarData/navData4";
 import { constrainedMemory } from "process";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../../components/UI/hover-card";
+import Userprofile from "../Modals/Userprofile";
 
 export default function Navigationbar() {
   const currentRoute = usePathname();
@@ -59,14 +65,16 @@ export default function Navigationbar() {
         <div className="Settingsicon">
           <Settingsicon />
         </div>
-        <div className="Avatar-section">
-          <Credentials
-            user={{
-              firstName: "Paul",
-              lastName: "Mierlo",
-            }}
-          />
-        </div>
+        <Userprofile>
+          <div className="Avatar-section">
+            <Credentials
+              user={{
+                firstName: "Paul",
+                lastName: "Mierlo",
+              }}
+            />
+          </div>{" "}
+        </Userprofile>
       </div>
     </div>
   );
