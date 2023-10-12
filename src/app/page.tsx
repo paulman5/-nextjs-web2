@@ -1,9 +1,6 @@
-import Link from "next/link";
-import { registerLicense } from "@syncfusion/ej2-base";
+"use client";
 
-registerLicense(
-  "ORg4AjUWIQA/Gnt2VlhhQlJCfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5adEVjXXpfcHFXQ2ld"
-);
+import Link from "next/link";
 
 export default function page() {
   return (

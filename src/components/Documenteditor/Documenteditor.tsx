@@ -34,7 +34,7 @@ import {
 import Sharemodal from "../../components/Modals/Sharemodal";
 import { Share } from "next/font/google";
 
-DocumentEditorContainerComponent.Inject(Toolbar);
+DocumentEditorContainerComponent;
 export default function Documenteditor() {
   const { showModal, openModal, closeModal } = useModal();
   let documenteditor: any;
@@ -87,12 +87,9 @@ export default function Documenteditor() {
           }}
           height={"100vh"}
           width="70vw"
-          enableToolbar={false}
           serviceUrl="http://localhost:8081/api/documenteditor/"
           showPropertiesPane={false}
-        >
-          <Inject services={[Toolbar]} />
-        </DocumentEditorContainerComponent>
+        ></DocumentEditorContainerComponent>
       </div>
       {showModal && <Sharemodal closeModal={closeModal} />}
     </div>
