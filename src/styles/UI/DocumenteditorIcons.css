@@ -1,0 +1,7 @@
+.e-import:before {
+  content: "\e77a";
+}
+#Custom {
+    width: 100px!important;
+
+}

@@ -3,7 +3,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "../../components/UI/hover-card";
+} from "../UI/hover-card";
 import Credentials from "../UI/Credentials";
 
 type UserprofileProps = {

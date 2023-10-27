@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { registerLicense } from "@syncfusion/ej2-base";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 
+
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NHaF5cXmVCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH9fcnVQR2RfWUN1VkQ="
 );

@@ -13,7 +13,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "../../components/UI/hover-card";
+} from "../UI/hover-card";
 import Userprofile from "../Modals/Userprofile";
 
 export default function Navigationbar() {
