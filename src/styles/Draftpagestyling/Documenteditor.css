@@ -1,7 +1,35 @@
-.e-split-btn-wrapper .e-split-btn {
-    z-index: 0;
+.col-lg-2 {
+  position: relative;
+  float: left;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+  width: 16.67%;
 }
-.toolbar-parent .e-toolbar-items {
-    gap:10px;
+.col-lg-10 {
+  position: relative;
+  float: left;
+  min-height: 1px;
+  margin-left: 150px;
+}
+.e-split-btn-wrapper .e-split-btn {
+  z-index: 0;
+}
 
+.toolbar-parent .e-toolbar-items {
+  gap: 10px;
+}
+.toolbar-scroll-parent {
+  overflow: hidden;
+}
+.toolbar-scroll-child {
+  overflow-y: scroll;
+  box-sizing: content-box; /* So the width will be 100% + 17px */
+}
+.Formfieldbutton button:hover {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(75 85 99 / var(--tw-bg-opacity)) !important;
+  transition-property: all !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
 }

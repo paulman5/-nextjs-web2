@@ -8,7 +8,7 @@ import Sidenavnew from "../components/Navigationbar/Sidenavnew";
 import Navigationbar from "@/components/Navigationbar/Navigation";
 import { usePathname } from "next/navigation";
 import { registerLicense } from "@syncfusion/ej2-base";
-import { UserProvider } from "@auth0/nextjs-auth0/client";
+import { UserProvider, useUser } from "@auth0/nextjs-auth0/client";
 
 
 registerLicense(

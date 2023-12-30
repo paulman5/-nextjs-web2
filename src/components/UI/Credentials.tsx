@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useState, useEffect } from "react";
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 interface CredentialsProps {
   user: {
@@ -12,11 +13,11 @@ interface CredentialsProps {
 }
 
 export default function Credentials({
+  
   user,
   displayInitials = true,
 }: CredentialsProps) {
   const initials = user.firstName[0] + user.lastName[0];
-
   if (displayInitials) {
     return (
       <div className="avatar placeholder">
