@@ -1,26 +1,26 @@
-"use client";
+"use client"
 
-import React from "react";
-import { useRef, useState } from "react";
-import { useModal } from "../../hooks/Modalhook";
-import "../../../node_modules/@syncfusion/ej2-base/styles/material.css";
-import "../../../node_modules/@syncfusion/ej2-buttons/styles/material3.css";
-import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
-import "../../../node_modules/@syncfusion/ej2-popups/styles/material.css";
-import "../../../node_modules/@syncfusion/ej2-lists/styles/material.css";
-import "../../../node_modules/@syncfusion/ej2-navigations/styles/material.css";
-import "../../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
-import "../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css";
-import "../../../node_modules/@syncfusion/ej2-react-documenteditor/styles/material.css";
-import "../../styles/Draftpagestyling/Documenteditor.css";
-import "../../styles/UI/Documentproperties.css";
-import { ListView } from "@syncfusion/ej2-lists";
-import { ListViewComponent } from "@syncfusion/ej2-react-lists";
-import { DialogUtility, Dialog } from "@syncfusion/ej2-react-popups";
-import Backarrowicon from "../../lib/icons/UIicons/Backarrowicon";
-import Shareicon from "../../lib/icons/UIicons/Shareicon";
-import Formfieldicon from "@/lib/icons/UIicons/Formfieldicon";
-import Formfieldoptionsicon from "@/lib/icons/UIicons/Formfieldoptionsicon";
+import React from "react"
+import { useRef, useState, useEffect } from "react"
+import { useModal } from "../../hooks/Modalhook"
+import * as Interfaces from "../../components/interfaces/DocumenteditorInterface"
+import "../../../node_modules/@syncfusion/ej2-base/styles/material.css"
+import "../../../node_modules/@syncfusion/ej2-buttons/styles/material3.css"
+import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css"
+import "../../../node_modules/@syncfusion/ej2-popups/styles/material.css"
+import "../../../node_modules/@syncfusion/ej2-lists/styles/material.css"
+import "../../../node_modules/@syncfusion/ej2-navigations/styles/material.css"
+import "../../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css"
+import "../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css"
+import "../../../node_modules/@syncfusion/ej2-react-documenteditor/styles/material.css"
+import "../../styles/Draftpagestyling/Documenteditor.css"
+import "../../styles/UI/Documentproperties.css"
+import { ListBoxComponent } from "@syncfusion/ej2-react-dropdowns"
+import { DialogUtility, Dialog } from "@syncfusion/ej2-react-popups"
+import Backarrowicon from "../../lib/icons/UIicons/Backarrowicon"
+import Shareicon from "../../lib/icons/UIicons/Shareicon"
+import Formfieldicon from "@/lib/icons/UIicons/Formfieldicon"
+import Formfieldoptionsicon from "@/lib/icons/UIicons/Formfieldoptionsicon"
 import {
   DocumentEditorComponent,
   DocumentEditorContainerComponent,
@@ -35,59 +35,143 @@ import {
   EditorHistory,
   ContextMenu,
   FormFieldSettings,
-} from "@syncfusion/ej2-react-documenteditor";
-import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
-import { ColorPickerComponent } from "@syncfusion/ej2-react-inputs";
+} from "@syncfusion/ej2-react-documenteditor"
+import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns"
+import { ColorPickerComponent } from "@syncfusion/ej2-react-inputs"
 import {
   DropDownButtonComponent,
   ItemModel,
-} from "@syncfusion/ej2-react-splitbuttons";
-import { Edit } from "lucide-react";
-import Sharemodal from "../Modals/Sharemodal";
-import Formfieldmodal from "../Modals/Formfieldmodal";
-import { Share } from "next/font/google";
+} from "@syncfusion/ej2-react-splitbuttons"
+import { Edit } from "lucide-react"
+import Sharemodal from "../Modals/Sharemodal"
+import Formfieldmodal from "../Modals/Formfieldmodal"
+import { Share } from "next/font/google"
 import {
   ToolbarComponent,
   ItemDirective,
   ItemsDirective,
-} from "@syncfusion/ej2-react-navigations";
+} from "@syncfusion/ej2-react-navigations"
+import { Container } from "postcss"
 // import { TitleBar } from './title-bar';
 
-DocumentEditorContainerComponent;
+DocumentEditorContainerComponent
 
 export default function Documenteditor() {
-  DocumentEditorContainer.Inject(Toolbar, Editor, EditorHistory);
+  DocumentEditorContainer.Inject(Toolbar, Editor, EditorHistory)
+
+  let Formfieldproperties: Interfaces.Formfieldproperties
 
   // Defining settings for the formfield of the documenteditor
   const FormFieldSettings = {
     selectionColor: "#AAFF00",
     shadingColor: "#AAFF00",
-  };
+  }
 
-  const { showModal, openModal, closeModal } = useModal();
+  const [showFieldDialog, setShowFieldDialog] = useState(false)
+  const [isFormfieldObjClick, setisFormfieldObjClick] = useState(false)
+  const [selectedFieldName, setSelectedFieldName] = useState("")
+  const { showModal, openModal, closeModal } = useModal()
 
-  let documenteditor: any;
-  let titleBar;
-  let titleBarDiv;
-  let Data: {
-    text: any;
-    category: any;
-    htmlAttributes: { draggable: boolean };
-  }[];
-  let field;
-  let listviewInstance: ListViewComponent = null as any;
+  const listviewRef = useRef<any>()
+  const containerRef = useRef<any>()
+
+  let documenteditor: DocumentEditorContainerComponent
+  let fieldNameListArray: string[] = []
+
+  useEffect(() => {
+    documenteditor = containerRef.current!
+  }, [])
 
   const onSelect = (args) => {
-    let fieldName = args.text;
-    let fieldtype = args.category;
-    listview.selectedItems = []; // Clear the selection
-    insertField(fieldName, fieldtype);
-  };
+    let fieldName = args.text
+    let fieldtype = args.category
+    listview.selectedItems = [] // Clear the selection
+    insertField(fieldName, fieldtype)
+    setSelectedFieldName(fieldName)
+  }
 
-  React.useEffect(() => {
-    componentDidMount();
-  }, []);
+  // Check if the form field already exists
+  useEffect(() => {
+    if (selectedFieldName) {
+      let data = {
+        text: selectedFieldName,
+        category: "text",
+        htmlAttributes: { draggable: true },
+      }
+      if (listviewRef.current) {
+        listviewRef.current.addItem([data])
+      }
+    }
+  }, [selectedFieldName]) // assuming fieldName is a prop or state
 
+  useEffect(() => {
+    const handleDragStart = (event) => {
+      event.dataTransfer.setData("Text", event.target.innerText)
+      event.dataTransfer.effectAllowed = "move"
+      event.dataTransfer.dropEffect = "move"
+      event.target.classList.add("de-drag-target")
+      event.target.classList.add("small-width") // Apply the CSS class to change width
+
+      // Create a new div for the drag image
+      const dragImage = document.createElement("div")
+      dragImage.textContent = event.target.innerText
+      dragImage.style.position = "absolute"
+      dragImage.style.top = "-1000px"
+      document.body.appendChild(dragImage)
+      event.dataTransfer.setDragImage(dragImage, 0, 0)
+    }
+
+    const handleDragOver = (event) => {
+      event.preventDefault()
+    }
+
+    const handleDrop = (event) => {
+      let text = event.dataTransfer.getData("Text")
+      if (documenteditor && documenteditor.documentEditor) {
+        documenteditor.documentEditor.selection.select({
+          x: event.offsetX,
+          y: event.offsetY,
+          extend: false,
+        })
+      }
+      insertField(text)
+    }
+
+    const handleDragEnd = (event) => {
+      if (event.target.classList.contains("de-drag-target")) {
+        event.target.classList.remove("de-drag-target")
+
+        // Remove the drag image div
+        let dragImage = document.querySelector(
+          'div[style="position: absolute; top: -1000px;"]'
+        )
+        if (dragImage) {
+          document.body.removeChild(dragImage)
+        }
+      }
+    }
+
+    const listviewElement = listviewRef.current
+    const containerElement = containerRef.current
+    console.log("listviewElement:", listviewElement)
+    console.log("containerElement:", containerElement)
+
+    if (listviewElement && containerElement) {
+      listviewElement.addEventListener("dragstart", handleDragStart)
+      containerElement.addEventListener("dragover", handleDragOver)
+      containerElement.addEventListener("drop", handleDrop)
+      document.addEventListener("dragend", handleDragEnd)
+    }
+    // Clean up event listeners when component unmounts
+    return () => {
+      listviewElement.removeEventListener("dragstart", handleDragStart)
+      containerElement.removeEventListener("dragover", handleDragOver)
+      containerElement.removeEventListener("drop", handleDrop)
+      document.removeEventListener("dragend", handleDragEnd)
+    }
+  }, [listviewRef.current, containerRef.current])
+
+  // Defining items model for alignment items
   let items: ItemModel[] = [
     {
       text: "left",
@@ -105,71 +189,48 @@ export default function Documenteditor() {
       text: "justify",
       iconCss: "e-icons e-justify",
     },
-  ];
+  ]
 
-  function listTemplate(data: any): JSX.Element {
+  // Template for the formfieldelements that should be drag and droppable
+  function FormfieldListElement(data: any): JSX.Element {
     return (
-      <div className="text-content flex flex-row">
-        <div className="content-start w-11/12" id="listview-text">
+      <div
+        className="text-content flex flex-row justify-between"
+        draggable="false"
+        onClick={() => handleListElementClick(data)}
+      >
+        <div
+          className="relative content-start w-auto left-2 top-1"
+          id="listview-text"
+          draggable="true"
+        >
           {data.text}{" "}
         </div>
         <div className="field-option">
           <Formfieldoptionsicon />
         </div>
-        <hr className="w-3"></hr>
       </div>
-    );
+    )
   }
 
-  function created() {
+  // Letting the user click multiple times on a listview element
+  const handleListElementClick = (data) => {
+    insertField(data.text, "text")
+    console.log(documenteditor.documentEditor.getFormFieldInfo())
+  }
+
+  function Created() {
     // load your default document here
-    let data = `{"sections":[{"sectionFormat":{"pageWidth":612,"pageHeight":792,"leftMargin":72,"rightMargin":72,"topMargin":72,"bottomMargin":72,"differentFirstPage":false,"differentOddAndEvenPages":false,"headerDistance":36,"footerDistance":36,"bidi":false},"blocks":[{"paragraphFormat":{"afterSpacing":30,"styleName":"Heading 1","listFormat":{}},"characterFormat":{},"inlines":[{"characterFormat":{},"text":"Adventure Works Cycles"}]}],"headersFooters":{"header":{"blocks":[{"paragraphFormat":{"listFormat":{}},"characterFormat":{},"inlines":[]}]},"footer":{"blocks":[{"paragraphFormat":{"listFormat":{}},"characterFormat":{},"inlines":[]}]}}}],"characterFormat":{"bold":false,"italic":false,"fontSize":11,"fontFamily":"Calibri","underline":"None","strikethrough":"None","baselineAlignment":"Normal","highlightColor":"NoColor","fontColor":"empty","fontSizeBidi":11,"fontFamilyBidi":"Calibri","allCaps":false},"paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":0,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","listFormat":{},"bidi":false},"defaultTabWidth":36,"trackChanges":false,"enforcement":false,"hashValue":"","saltValue":"","formatting":false,"protectionType":"NoProtection","dontUseHTMLParagraphAutoSpacing":false,"formFieldShading":true,"styles":[{"name":"Normal","type":"Paragraph","paragraphFormat":{"lineSpacing":1.149999976158142,"lineSpacingType":"Multiple","listFormat":{}},"characterFormat":{"fontFamily":"Calibri"},"next":"Normal"},{"name":"Default Paragraph Font","type":"Character","characterFormat":{}},{"name":"Heading 1 Char","type":"Character","characterFormat":{"fontSize":16,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 1","type":"Paragraph","paragraphFormat":{"beforeSpacing":12,"afterSpacing":0,"outlineLevel":"Level1","listFormat":{}},"characterFormat":{"fontSize":16,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 1 Char","next":"Normal"},{"name":"Heading 2 Char","type":"Character","characterFormat":{"fontSize":13,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 2","type":"Paragraph","paragraphFormat":{"beforeSpacing":2,"afterSpacing":6,"outlineLevel":"Level2","listFormat":{}},"characterFormat":{"fontSize":13,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 2 Char","next":"Normal"},{"name":"Heading 3","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level3","listFormat":{}},"characterFormat":{"fontSize":12,"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Normal","link":"Heading 3 Char","next":"Normal"},{"name":"Heading 3 Char","type":"Character","characterFormat":{"fontSize":12,"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Default Paragraph Font"},{"name":"Heading 4","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level4","listFormat":{}},"characterFormat":{"italic":true,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 4 Char","next":"Normal"},{"name":"Heading 4 Char","type":"Character","characterFormat":{"italic":true,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 5","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level5","listFormat":{}},"characterFormat":{"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 5 Char","next":"Normal"},{"name":"Heading 5 Char","type":"Character","characterFormat":{"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 6","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level6","listFormat":{}},"characterFormat":{"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Normal","link":"Heading 6 Char","next":"Normal"},{"name":"Heading 6 Char","type":"Character","characterFormat":{"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Default Paragraph Font"}],"lists":[],"abstractLists":[],"comments":[],"revisions":[],"customXml":[]}`;
+    let data = `{"sections":[{"sectionFormat":{"pageWidth":612,"pageHeight":792,"leftMargin":72,"rightMargin":72,"topMargin":72,"bottomMargin":72,"differentFirstPage":false,"differentOddAndEvenPages":false,"headerDistance":36,"footerDistance":36,"bidi":false},"blocks":[{"paragraphFormat":{"afterSpacing":30,"styleName":"Heading 1","listFormat":{}},"characterFormat":{},"inlines":[{"characterFormat":{},"text":"Adventure Works Cycles"}]}],"headersFooters":{"header":{"blocks":[{"paragraphFormat":{"listFormat":{}},"characterFormat":{},"inlines":[]}]},"footer":{"blocks":[{"paragraphFormat":{"listFormat":{}},"characterFormat":{},"inlines":[]}]}}}],"characterFormat":{"bold":false,"italic":false,"fontSize":11,"fontFamily":"Calibri","underline":"None","strikethrough":"None","baselineAlignment":"Normal","highlightColor":"NoColor","fontColor":"empty","fontSizeBidi":11,"fontFamilyBidi":"Calibri","allCaps":false},"paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":0,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","listFormat":{},"bidi":false},"defaultTabWidth":36,"trackChanges":false,"enforcement":false,"hashValue":"","saltValue":"","formatting":false,"protectionType":"NoProtection","dontUseHTMLParagraphAutoSpacing":false,"formFieldShading":true,"styles":[{"name":"Normal","type":"Paragraph","paragraphFormat":{"lineSpacing":1.149999976158142,"lineSpacingType":"Multiple","listFormat":{}},"characterFormat":{"fontFamily":"Calibri"},"next":"Normal"},{"name":"Default Paragraph Font","type":"Character","characterFormat":{}},{"name":"Heading 1 Char","type":"Character","characterFormat":{"fontSize":16,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 1","type":"Paragraph","paragraphFormat":{"beforeSpacing":12,"afterSpacing":0,"outlineLevel":"Level1","listFormat":{}},"characterFormat":{"fontSize":16,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 1 Char","next":"Normal"},{"name":"Heading 2 Char","type":"Character","characterFormat":{"fontSize":13,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 2","type":"Paragraph","paragraphFormat":{"beforeSpacing":2,"afterSpacing":6,"outlineLevel":"Level2","listFormat":{}},"characterFormat":{"fontSize":13,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 2 Char","next":"Normal"},{"name":"Heading 3","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level3","listFormat":{}},"characterFormat":{"fontSize":12,"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Normal","link":"Heading 3 Char","next":"Normal"},{"name":"Heading 3 Char","type":"Character","characterFormat":{"fontSize":12,"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Default Paragraph Font"},{"name":"Heading 4","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level4","listFormat":{}},"characterFormat":{"italic":true,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 4 Char","next":"Normal"},{"name":"Heading 4 Char","type":"Character","characterFormat":{"italic":true,"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 5","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level5","listFormat":{}},"characterFormat":{"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Normal","link":"Heading 5 Char","next":"Normal"},{"name":"Heading 5 Char","type":"Character","characterFormat":{"fontFamily":"Calibri Light","fontColor":"#2F5496"},"basedOn":"Default Paragraph Font"},{"name":"Heading 6","type":"Paragraph","paragraphFormat":{"leftIndent":0,"rightIndent":0,"firstLineIndent":0,"textAlignment":"Left","beforeSpacing":2,"afterSpacing":0,"lineSpacing":1.0791666507720947,"lineSpacingType":"Multiple","outlineLevel":"Level6","listFormat":{}},"characterFormat":{"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Normal","link":"Heading 6 Char","next":"Normal"},{"name":"Heading 6 Char","type":"Character","characterFormat":{"fontFamily":"Calibri Light","fontColor":"#1F3763"},"basedOn":"Default Paragraph Font"}],"lists":[],"abstractLists":[],"comments":[],"revisions":[],"customXml":[]}`
 
-    // Open the default document
-    documenteditor.documentEditor.open(data);
-    documenteditor.enableToolbar = false;
-    let element = document.getElementById("listview");
-    element.addEventListener("dragstart", (event) => {
-      event.dataTransfer.setData("Text", event.target.innerText);
-      event.target.classList.add("de-drag-target");
-      const fieldOption = event.target.querySelector(
-        "div.field-option"
-      ) as HTMLElement;
-      if (fieldOption) {
-        fieldOption.style.display = "none";
-      }
-    });
-    // Prevent default drag over for document editor element
-    document
-      .getElementById("container")
-      .addEventListener("dragover", (event) => {
-        event.preventDefault();
-      });
-    // Drop Event for document editor element
-    document.getElementById("container").addEventListener("drop", (e) => {
-      let text = e.dataTransfer.getData("Text");
-      documenteditor.documentEditor.selection.select({
-        x: e.offsetX,
-        y: e.offsetY,
-        extend: false,
-      });
-      insertField(text);
-    });
-    document.addEventListener("dragend", (event) => {
-      if (event.target.classList.contains("de-drag-target")) {
-        event.target.classList.remove("de-drag-target");
-        const fieldOption = event.target.querySelector(
-          "div.field-option"
-        ) as HTMLElement;
-        if (fieldOption) {
-          fieldOption.style.display = "block";
-        }
-      }
-    });
+    // Open the default documenteditor
+    containerRef.current.documentEditor.open(data)
+    containerRef.current.enableToolbar = false
   }
+
   const closeFieldDialog = () => {
-    documenteditor.documentEditor.focusIn();
-  };
+    documenteditor.documentEditor.focusIn()
+  }
 
   let insertFieldDialogObj = new Dialog({
     header: "Merge Field",
@@ -186,13 +247,25 @@ export default function Documenteditor() {
     buttons: [
       {
         click: () => {
-          let fieldNameTextBox = document.getElementById("field_text");
-          let fieldName = fieldNameTextBox.value;
-          if (fieldName !== "") {
-            AddField(fieldName, "text");
+          let fieldNameTextBox = document.getElementById(
+            "field_text" // Gets the value of the input node insertfieldDialog
+          ) as HTMLInputElement
+          let fieldName = fieldNameTextBox.value // Assigns the input value to fieldName
+          let fieldNameList =
+            document.getElementById("listview-text")?.innerText
+
+          if (fieldName !== "" && !fieldNameListArray.includes(fieldName)) {
+            // Checks if input value is not null and if input value already exists in the fieldNameListArray
+            AddField(fieldName, "text")
+            if (fieldName) {
+              fieldNameListArray.push(fieldName) // if listview-text text value is available put it into the fieldNameListArray
+              console.log("ListArray:", fieldNameListArray) // console log to check if listview element is correctly added to the array
+            }
+          } else {
+            console.log(`Field ${fieldName} already exists`) // if listview-text already exist console log it
           }
-          insertFieldDialogObj.hide();
-          documenteditor.documentEditor.focusIn();
+          insertFieldDialogObj.hide()
+          documenteditor.documentEditor.focusIn()
         },
         buttonModel: {
           content: "Ok",
@@ -202,8 +275,8 @@ export default function Documenteditor() {
       },
       {
         click: () => {
-          insertFieldDialogObj.hide();
-          documenteditor.documentEditor.focusIn();
+          insertFieldDialogObj.hide()
+          documenteditor.documentEditor.focusIn()
         },
         buttonModel: {
           content: "Cancel",
@@ -211,189 +284,201 @@ export default function Documenteditor() {
         },
       },
     ],
-  });
+  })
 
   const showInsertFielddialog = (container) => {
-    let instance = this;
+    let instance = this
     if (
       document.getElementById("insert_merge_field") === null ||
       document.getElementById("insert_merge_field") === undefined
     ) {
-      let fieldcontainer = document.createElement("div");
-      fieldcontainer.id = "insert_merge_field";
-      document.body.appendChild(fieldcontainer);
-      insertFieldDialogObj.appendTo("#insert_merge_field");
-      fieldcontainer.parentElement.style.position = "fixed";
-      fieldcontainer.style.width = "auto";
-      fieldcontainer.style.height = "auto";
+      let fieldcontainer = document.createElement("div")
+      fieldcontainer.id = "insert_merge_field"
+      document.body.appendChild(fieldcontainer)
+      insertFieldDialogObj.appendTo("#insert_merge_field")
+      fieldcontainer.parentElement.style.position = "fixed"
+      fieldcontainer.style.width = "auto"
+      fieldcontainer.style.height = "auto"
     }
     insertFieldDialogObj.close = () => {
-      container.documentEditor.focusIn();
-    };
+      container.documentEditor.focusIn()
+    }
     insertFieldDialogObj.beforeOpen = () => {
-      container.documentEditor.focusIn();
-    };
-    insertFieldDialogObj.show();
-    let fieldNameTextBox = document.getElementById("field_text");
-    fieldNameTextBox.value = "";
-  };
-  const AddField = (fieldName, fieldtype) => {
+      container.documentEditor.focusIn()
+    }
+    insertFieldDialogObj.show()
+    let fieldNameTextBox = document.getElementById(
+      "field_text"
+    ) as HTMLInputElement // Input node
+    fieldNameTextBox.value = ""
+  }
+
+  const AddField = (fieldName: string, fieldtype: string) => {
     let data = {
       text: fieldName,
       category: "text",
       htmlAttributes: { draggable: true },
-    };
-    listviewInstance.addItem([data]);
-  };
-  const insertField = (fieldName, fieldtype) => {
-    documenteditor.documentEditor.editor.insertFormField("Text");
-    let formFieldsNames = documenteditor.documentEditor.getFormFieldNames();
+    }
+    if (listviewRef.current) {
+      listviewRef.current.addItem([data]) // Getting current listviewinstance
+    }
+  }
+
+  const insertField = (fieldName, fieldType) => {
+    console.log("Inserting field:", fieldName, fieldType) // Add this line
+    documenteditor.documentEditor.editor.insertFormField("Text")
+    let formFieldsNames = documenteditor.documentEditor.getFormFieldNames()
     for (let i = 0; i < formFieldsNames.length; i++) {
       let textfieldInfo = documenteditor.documentEditor.getFormFieldInfo(
         formFieldsNames[i]
-      );
+      )
       if (textfieldInfo.defaultValue == "") {
-        textfieldInfo.defaultValue = fieldName;
+        textfieldInfo.defaultValue = fieldName
         documenteditor.documentEditor.setFormFieldInfo(
           formFieldsNames[i],
           textfieldInfo
-        );
+        )
       }
     }
-  };
-  function componentDidMount() {
-    setTimeout(() => {
-      created();
-    });
+    // Formfield Names instead of default text
+    console.log("Getting Formfield names:", fieldNameListArray)
+    console.log(
+      "Getting Formfield info:",
+      documenteditor.documentEditor.getFormFieldInfo()
+    )
+  }
 
+  if (documenteditor && documenteditor.documentEditor) {
     documenteditor.documentEditor.selectionChange = () => {
       setTimeout(() => {
-        onSelectionChange();
-      }, 20);
-    };
-    documenteditor.enableEditorHistory = true;
+        onSelectionChange()
+      }, 20)
+    }
+
+    documenteditor.documentEditor.enableEditorHistory = true
   }
 
   function toolbarButtonClick(arg: any) {
     switch (arg.item.id) {
       case "undo":
-        documenteditor.documentEditor.editorHistory.undo();
-        break;
+        documenteditor.documentEditor.editorHistory.undo()
+        break
       case "redo":
-        documenteditor.documentEditor.editorHistory.redo();
-        break;
+        documenteditor.documentEditor.editorHistory.redo()
+        break
       case "bold":
         //Toggles the bold of selected content
-        documenteditor.documentEditor.editor.toggleBold();
-        break;
+        documenteditor.documentEditor.editor.toggleBold()
+        break
       case "italic":
         //Toggles the Italic of selected content
-        documenteditor.documentEditor.editor.toggleItalic();
-        break;
+        documenteditor.documentEditor.editor.toggleItalic()
+        break
       case "underline":
         //Toggles the underline of selected content
-        documenteditor.documentEditor.editor.toggleUnderline("Single");
-        break;
+        documenteditor.documentEditor.editor.toggleUnderline("Single")
+        break
       case "strikethrough":
         //Toggles the strikethrough of selected content
-        documenteditor.documentEditor.editor.toggleStrikethrough();
-        break;
+        documenteditor.documentEditor.editor.toggleStrikethrough()
+        break
       case "subscript":
         //Toggles the subscript of selected content
-        documenteditor.documentEditor.editor.toggleSubscript();
-        break;
+        documenteditor.documentEditor.editor.toggleSubscript()
+        break
       case "superscript":
         //Toggles the superscript of selected content
-        documenteditor.documentEditor.editor.toggleSuperscript();
-        break;
+        documenteditor.documentEditor.editor.toggleSuperscript()
+        break
       case "paragraph":
-        documenteditor.documentEditor.editor.toggleTextAlignment();
-        break;
+        documenteditor.documentEditor.editor.toggleTextAlignment()
+        break
       case "bulletlist":
-        documenteditor.documentEditor.editor.applyBullet("\uf0b7", "Symbol");
-        break;
+        documenteditor.documentEditor.editor.applyBullet("\uf0b7", "Symbol")
+        break
       case "numberlist":
-        documenteditor.documentEditor.editor.applyNumbering("%1)", "UpRoman");
-        break;
+        documenteditor.documentEditor.editor.applyNumbering("%1)", "UpRoman")
+        break
       case "image":
-        documenteditor.documentEditor.editor.toggleImage();
-        break;
+        documenteditor.documentEditor.editor.toggleImage()
+        break
       case "table":
-        documenteditor.documentEditor.editor.insertTable();
-        break;
+        documenteditor.documentEditor.editor.insertTable()
+        break
       case "comment":
-        documenteditor.documentEditor.editor.insertComment();
-        break;
+        documenteditor.documentEditor.editor.insertComment()
+        break
     }
   }
   function AlignmentButtonClick(args: any) {
-    let text: string = args.item.text;
+    let text: string = args.item.text
     switch (text) {
       case "left":
         //Toggle the Left alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Left");
-        break;
+        documenteditor.documentEditor.editor.toggleTextAlignment("Left")
+        break
       case "right":
         //Toggle the Right alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Right");
-        break;
+        documenteditor.documentEditor.editor.toggleTextAlignment("Right")
+        break
       case "center":
         //Toggle the Center alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Center");
-        break;
+        documenteditor.documentEditor.editor.toggleTextAlignment("Center")
+        break
       case "justify":
         //Toggle the Justify alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Justify");
-        break;
+        documenteditor.documentEditor.editor.toggleTextAlignment("Justify")
+        break
       case "ShowParagraphMark":
         //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
         documenteditor.documentEditorSettings.showHiddenMarks =
-          !documenteditor.documentEditorSettings.showHiddenMarks;
-        break;
+          !documenteditor.documentEditorSettings.showHiddenMarks
+        break
     }
   }
   function handleButtonClick(arg: any) {
-    toolbarButtonClick(arg);
-    AlignmentButtonClick(arg);
+    toolbarButtonClick(arg)
+    AlignmentButtonClick(arg)
   }
   //To change the font Style of selected content
   function changeFontFamily(args: any): void {
     documenteditor.documentEditor.selection.characterFormat.fontFamily =
-      args.value;
-    documenteditor.documentEditor.focusIn();
+      args.value
+    documenteditor.documentEditor.focusIn()
   }
   //To Change the font Size of selected content
   function changeFontSize(args: any): void {
     documenteditor.documentEditor.selection.characterFormat.fontSize =
-      args.value;
-    documenteditor.documentEditor.focusIn();
+      args.value
+    documenteditor.documentEditor.focusIn()
   }
   //To Change the font Color of selected content
   function changeFontColor(args: any) {
     documenteditor.documentEditor.selection.characterFormat.fontColor =
-      args.currentValue.hex;
-    documenteditor.documentEditor.focusIn();
+      args.currentValue.hex
+    documenteditor.documentEditor.focusIn()
   }
 
   // Selection change to retrieve formatting
   function onSelectionChange() {
-    if (documenteditor && documenteditor.selection) {
-      var paragraphFormat = documenteditor.selection.paragraphFormat;
-      var toggleBtnId = ["AlignLeft", "AlignCenter", "AlignRight", "Justify"];
+    if (documenteditor && documenteditor.documentEditor.selection) {
+      var paragraphFormat =
+        documenteditor.documentEditor.selection.paragraphFormat
+      var toggleBtnId = ["AlignLeft", "AlignCenter", "AlignRight", "Justify"]
       //Remove toggle state.
       for (var i = 0; i < toggleBtnId.length; i++) {
-        let toggleBtn: HTMLElement = document.getElementById(toggleBtnId[i]);
-        toggleBtn.classList.remove("e-btn-toggle");
+        let toggleBtn: HTMLElement = document.getElementById(toggleBtnId[i])
+        toggleBtn.classList.remove("e-btn-toggle")
       }
       //Add toggle state based on selection paragraph format.
       if (paragraphFormat.textAlignment === "Left") {
-        document.getElementById("AlignLeft").classList.add("e-btn-toggle");
+        document.getElementById("AlignLeft").classList.add("e-btn-toggle")
       } else if (paragraphFormat.textAlignment === "Right") {
-        document.getElementById("AlignRight").classList.add("e-btn-toggle");
+        document.getElementById("AlignRight").classList.add("e-btn-toggle")
       } else if (paragraphFormat.textAlignment === "Center") {
-        document.getElementById("AlignCenter").classList.add("e-btn-toggle");
+        document.getElementById("AlignCenter").classList.add("e-btn-toggle")
       } else {
-        document.getElementById("Justify").classList.add("e-btn-toggle");
+        document.getElementById("Justify").classList.add("e-btn-toggle")
       }
       // #endregion
     }
@@ -401,31 +486,32 @@ export default function Documenteditor() {
 
   function enableDisableFontOptions() {
     var characterformat =
-      documenteditor.documentEditor.selection.characterFormat;
+      documenteditor.documentEditor.selection.characterFormat
     var properties = [
       characterformat.bold,
       characterformat.italic,
       characterformat.underline,
       characterformat.strikethrough,
-    ];
-    var toggleBtnId = ["bold", "italic", "underline", "strikethrough"];
+    ]
+    var toggleBtnId = ["bold", "italic", "underline", "strikethrough"]
     for (let i = 0; i < properties.length; i++) {
-      changeActiveState(properties[i], toggleBtnId[i]);
+      changeActiveState(properties[i], toggleBtnId[i])
     }
   }
 
   function changeActiveState(property: any, btnId: any) {
-    let toggleBtn: any = document.getElementById(btnId);
+    let toggleBtn: any = document.getElementById(btnId)
     if (
       (typeof property == "boolean" && property == true) ||
       (typeof property == "string" && property !== "None")
     )
-      toggleBtn.classList.add("e-btn-toggle");
+      toggleBtn.classList.add("e-btn-toggle")
     else {
       if (toggleBtn.classList.contains("e-btn-toggle"))
-        toggleBtn.classList.remove("e-btn-toggle");
+        toggleBtn.classList.remove("e-btn-toggle")
     }
   }
+
   let fontStyle: string[] = [
     "Algerian",
     "Arial",
@@ -443,7 +529,7 @@ export default function Documenteditor() {
     "Times New Roman",
     "Verdana",
     "Windings",
-  ];
+  ]
   let fontSize: string[] = [
     "8",
     "9",
@@ -462,7 +548,7 @@ export default function Documenteditor() {
     "48",
     "72",
     "96",
-  ];
+  ]
   function contentTemplate1() {
     return (
       <ColorPickerComponent
@@ -470,7 +556,7 @@ export default function Documenteditor() {
         value="#000000"
         change={changeFontColor}
       ></ColorPickerComponent>
-    );
+    )
   }
   function contentTemplate2() {
     return (
@@ -483,7 +569,7 @@ export default function Documenteditor() {
         allowCustom={true}
         showClearButton={false}
       ></ComboBoxComponent>
-    );
+    )
   }
   function contentTemplate3() {
     return (
@@ -496,9 +582,11 @@ export default function Documenteditor() {
           index={2}
           allowCustom={true}
           showClearButton={false}
+          popupWidth={65}
+          popupHeight={300}
         ></ComboBoxComponent>
       </div>
-    );
+    )
   }
   function contentTemplate4() {
     return (
@@ -507,7 +595,7 @@ export default function Documenteditor() {
         iconCss="e-icons e-paragraph-2"
         select={AlignmentButtonClick}
       ></DropDownButtonComponent>
-    );
+    )
   }
 
   return (
@@ -536,7 +624,11 @@ export default function Documenteditor() {
       <div className="relative top-5">
         <div
           className="col-lg-10"
-          style={{ paddingLeft: "0px", paddingRight: "0px", paddingTop: "0px" }}
+          style={{
+            paddingLeft: "0px",
+            paddingRight: "0px",
+            paddingTop: "0px",
+          }}
         >
           <ToolbarComponent
             id="toolbar"
@@ -613,9 +705,7 @@ export default function Documenteditor() {
           </ToolbarComponent>
           <DocumentEditorContainerComponent
             id="container"
-            ref={(scope) => {
-              documenteditor = scope;
-            }}
+            ref={containerRef}
             height={"100vh"}
             width="70vw"
             serviceUrl="http://localhost:8081/api/documenteditor/"
@@ -674,18 +764,15 @@ export default function Documenteditor() {
             </button>
           </div>
           <hr className="border-slate-300 mt-2"></hr>
-          <ListViewComponent
+          <ListBoxComponent
             id="listview"
-            dataSource={Data}
-            select={(args) => onSelect(args)}
-            template={listTemplate}
-            ref={(listview) => {
-              listviewInstance = listview as any;
-            }}
+            itemTemplate={FormfieldListElement}
+            ref={listviewRef}
+            allowDragAndDrop={true}
           />
         </div>
       </div>
       {showModal && <Sharemodal closeModal={closeModal} />}
     </div>
-  );
+  )
 }

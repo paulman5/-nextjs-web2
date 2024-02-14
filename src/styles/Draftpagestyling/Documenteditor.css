@@ -15,16 +15,22 @@
 .e-split-btn-wrapper .e-split-btn {
   z-index: 0;
 }
-
-.toolbar-parent .e-toolbar-items {
-  gap: 10px;
+/* CSS Changing ListBox Appearance */
+.e-listbox-wrapper {
+  border:none;
 }
-.toolbar-scroll-parent {
-  overflow: hidden;
+/* Changing pop-up appearance */
+.e-ddl.e-popup {
+  box-shadow:none;
 }
-.toolbar-scroll-child {
-  overflow-y: scroll;
-  box-sizing: content-box; /* So the width will be 100% + 17px */
+/* CSS for the comboboxcompent of fontSize */
+#ej2_dropdownlist_27_popup {
+  overflow:hidden;
+  max-height: none!important;
+}
+.e-dropdownbase {
+  overflow:none!important;
+  max-height:none!important;
 }
 .Formfieldbutton button:hover {
   --tw-bg-opacity: 1 !important;
