@@ -1,8 +1,9 @@
-import React from "react";
-import { UploadOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Space, Upload } from "antd";
-import { Header } from "antd/es/layout/layout";
-import "../../styles/Draftpagestyling/Drafthome.css";
+import React from "react"
+import { UploadOutlined } from "@ant-design/icons"
+import { Button, Popconfirm, Space, Upload } from "antd"
+import { Header } from "antd/es/layout/layout"
+import Signature from "./Signature"
+import "../../styles/Draftpagestyling/Drafthome.css"
 
 export default function Documentdrafthome() {
   const handleButtonClick = () => {
@@ -11,15 +12,15 @@ export default function Documentdrafthome() {
     })
       .then((response) => {
         if (response.ok) {
-          console.log("OK response received");
+          console.log("OK response received")
         } else {
-          console.error("Error response received");
+          console.error("Error response received")
         }
       })
       .catch((error) => {
-        console.error("Error occurred:", error);
-      });
-  };
+        console.error("Error occurred:", error)
+      })
+  }
   return (
     <div>
       <Header style={{ width: "100vw", backgroundColor: "white" }}>
@@ -32,6 +33,7 @@ export default function Documentdrafthome() {
           Generate document
         </Button>
       </Header>
+      <Signature />
     </div>
-  );
+  )
 }

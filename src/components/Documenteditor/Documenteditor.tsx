@@ -1,9 +1,10 @@
 "use client"
 
-import React from "react"
 import { useRef, useState, useEffect } from "react"
+import { ContainerRefProvider } from "../../context/containerContext"
 import { useModal } from "../../hooks/Modalhook"
-import * as Interfaces from "../../components/interfaces/DocumenteditorInterface"
+import { FormFieldSettings as MyFormFieldSettings } from "../Documenteditor/Documenteditorsettings"
+import * as Interfaces from "../../lib/interfaces/DocumenteditorInterface"
 import "../../../node_modules/@syncfusion/ej2-base/styles/material.css"
 import "../../../node_modules/@syncfusion/ej2-buttons/styles/material3.css"
 import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css"
@@ -15,7 +16,7 @@ import "../../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css"
 import "../../../node_modules/@syncfusion/ej2-react-documenteditor/styles/material.css"
 import "../../styles/Draftpagestyling/Documenteditor.css"
 import "../../styles/UI/Documentproperties.css"
-import { ListBoxComponent } from "@syncfusion/ej2-react-dropdowns"
+import { ListViewComponent } from "@syncfusion/ej2-react-lists"
 import { DialogUtility, Dialog } from "@syncfusion/ej2-react-popups"
 import Backarrowicon from "../../lib/icons/UIicons/Backarrowicon"
 import Shareicon from "../../lib/icons/UIicons/Shareicon"
@@ -36,23 +37,12 @@ import {
   ContextMenu,
   FormFieldSettings,
 } from "@syncfusion/ej2-react-documenteditor"
-import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns"
-import { ColorPickerComponent } from "@syncfusion/ej2-react-inputs"
 import {
   DropDownButtonComponent,
   ItemModel,
 } from "@syncfusion/ej2-react-splitbuttons"
-import { Edit } from "lucide-react"
 import Sharemodal from "../Modals/Sharemodal"
-import Formfieldmodal from "../Modals/Formfieldmodal"
-import { Share } from "next/font/google"
-import {
-  ToolbarComponent,
-  ItemDirective,
-  ItemsDirective,
-} from "@syncfusion/ej2-react-navigations"
-import { Container } from "postcss"
-// import { TitleBar } from './title-bar';
+import DocumenteditorToolbar from "../Documenteditor/DocumenteditorToolbar"
 
 DocumentEditorContainerComponent
 
@@ -60,49 +50,18 @@ export default function Documenteditor() {
   DocumentEditorContainer.Inject(Toolbar, Editor, EditorHistory)
 
   let Formfieldproperties: Interfaces.Formfieldproperties
-
-  // Defining settings for the formfield of the documenteditor
-  const FormFieldSettings = {
-    selectionColor: "#AAFF00",
-    shadingColor: "#AAFF00",
-  }
-
-  const [showFieldDialog, setShowFieldDialog] = useState(false)
-  const [isFormfieldObjClick, setisFormfieldObjClick] = useState(false)
-  const [selectedFieldName, setSelectedFieldName] = useState("")
-  const { showModal, openModal, closeModal } = useModal()
+  let documenteditor: DocumentEditorContainerComponent
+  let fieldNameListArray: string[] = []
 
   const listviewRef = useRef<any>()
   const containerRef = useRef<any>()
 
-  let documenteditor: DocumentEditorContainerComponent
-  let fieldNameListArray: string[] = []
+  const { showModal, openModal, closeModal } = useModal()
+  const [selectedListElement, setSelectedListElement] = useState([])
 
   useEffect(() => {
-    documenteditor = containerRef.current!
+    console.log("is initiated", containerRef)
   }, [])
-
-  const onSelect = (args) => {
-    let fieldName = args.text
-    let fieldtype = args.category
-    listview.selectedItems = [] // Clear the selection
-    insertField(fieldName, fieldtype)
-    setSelectedFieldName(fieldName)
-  }
-
-  // Check if the form field already exists
-  useEffect(() => {
-    if (selectedFieldName) {
-      let data = {
-        text: selectedFieldName,
-        category: "text",
-        htmlAttributes: { draggable: true },
-      }
-      if (listviewRef.current) {
-        listviewRef.current.addItem([data])
-      }
-    }
-  }, [selectedFieldName]) // assuming fieldName is a prop or state
 
   useEffect(() => {
     const handleDragStart = (event) => {
@@ -113,7 +72,7 @@ export default function Documenteditor() {
       event.target.classList.add("small-width") // Apply the CSS class to change width
 
       // Create a new div for the drag image
-      const dragImage = document.createElement("div")
+      const dragImage = document.createElement("div") // Creating an image so that only the text image is dragged
       dragImage.textContent = event.target.innerText
       dragImage.style.position = "absolute"
       dragImage.style.top = "-1000px"
@@ -164,32 +123,14 @@ export default function Documenteditor() {
     }
     // Clean up event listeners when component unmounts
     return () => {
-      listviewElement.removeEventListener("dragstart", handleDragStart)
-      containerElement.removeEventListener("dragover", handleDragOver)
-      containerElement.removeEventListener("drop", handleDrop)
-      document.removeEventListener("dragend", handleDragEnd)
+      if (listviewElement && containerElement) {
+        listviewElement.removeEventListener("dragstart", handleDragStart)
+        containerElement.removeEventListener("dragover", handleDragOver)
+        containerElement.removeEventListener("drop", handleDrop)
+        document.removeEventListener("dragend", handleDragEnd)
+      }
     }
-  }, [listviewRef.current, containerRef.current])
-
-  // Defining items model for alignment items
-  let items: ItemModel[] = [
-    {
-      text: "left",
-      iconCss: "e-icons e-align-left",
-    },
-    {
-      text: "center",
-      iconCss: "e-icons e-align-center",
-    },
-    {
-      text: "right",
-      iconCss: "e-icons e-align-right",
-    },
-    {
-      text: "justify",
-      iconCss: "e-icons e-justify",
-    },
-  ]
+  }, [])
 
   // Template for the formfieldelements that should be drag and droppable
   function FormfieldListElement(data: any): JSX.Element {
@@ -214,9 +155,8 @@ export default function Documenteditor() {
   }
 
   // Letting the user click multiple times on a listview element
-  const handleListElementClick = (data) => {
+  const handleListElementClick = (data: any) => {
     insertField(data.text, "text")
-    console.log(documenteditor.documentEditor.getFormFieldInfo())
   }
 
   function Created() {
@@ -229,7 +169,7 @@ export default function Documenteditor() {
   }
 
   const closeFieldDialog = () => {
-    documenteditor.documentEditor.focusIn()
+    containerRef.current.documentEditor.focusIn()
   }
 
   let insertFieldDialogObj = new Dialog({
@@ -255,7 +195,7 @@ export default function Documenteditor() {
             document.getElementById("listview-text")?.innerText
 
           if (fieldName !== "" && !fieldNameListArray.includes(fieldName)) {
-            // Checks if input value is not null and if input value already exists in the fieldNameListArray
+            // Checks if input value is not null and if input value does not already exist in the fieldNameListArray
             AddField(fieldName, "text")
             if (fieldName) {
               fieldNameListArray.push(fieldName) // if listview-text text value is available put it into the fieldNameListArray
@@ -265,7 +205,7 @@ export default function Documenteditor() {
             console.log(`Field ${fieldName} already exists`) // if listview-text already exist console log it
           }
           insertFieldDialogObj.hide()
-          documenteditor.documentEditor.focusIn()
+          containerRef.current.documentEditor.focusIn()
         },
         buttonModel: {
           content: "Ok",
@@ -276,7 +216,7 @@ export default function Documenteditor() {
       {
         click: () => {
           insertFieldDialogObj.hide()
-          documenteditor.documentEditor.focusIn()
+          containerRef.current.documentEditor.focusIn()
         },
         buttonModel: {
           content: "Cancel",
@@ -287,7 +227,6 @@ export default function Documenteditor() {
   })
 
   const showInsertFielddialog = (container) => {
-    let instance = this
     if (
       document.getElementById("insert_merge_field") === null ||
       document.getElementById("insert_merge_field") === undefined
@@ -320,153 +259,54 @@ export default function Documenteditor() {
       htmlAttributes: { draggable: true },
     }
     if (listviewRef.current) {
-      listviewRef.current.addItem([data]) // Getting current listviewinstance
+      listviewRef.current.addItem([data]) //
     }
   }
 
-  const insertField = (fieldName, fieldType) => {
-    console.log("Inserting field:", fieldName, fieldType) // Add this line
-    documenteditor.documentEditor.editor.insertFormField("Text")
-    let formFieldsNames = documenteditor.documentEditor.getFormFieldNames()
+  const insertField = (fieldName: string, fieldType: string) => {
+    console.log("Inserting field:", fieldName, fieldType)
+    containerRef.current.documentEditor.editor.insertFormField("Text") // Adds the formfield to the documenteditor
+    let formFieldsNames =
+      containerRef.current.documentEditor.getFormFieldNames()
     for (let i = 0; i < formFieldsNames.length; i++) {
-      let textfieldInfo = documenteditor.documentEditor.getFormFieldInfo(
+      let textfieldInfo = containerRef.current.documentEditor.getFormFieldInfo(
         formFieldsNames[i]
       )
       if (textfieldInfo.defaultValue == "") {
         textfieldInfo.defaultValue = fieldName
-        documenteditor.documentEditor.setFormFieldInfo(
+        containerRef.current.documentEditor.setFormFieldInfo(
+          // Sets the info the formfield holds
           formFieldsNames[i],
           textfieldInfo
         )
       }
     }
+
     // Formfield Names instead of default text
     console.log("Getting Formfield names:", fieldNameListArray)
     console.log(
       "Getting Formfield info:",
-      documenteditor.documentEditor.getFormFieldInfo()
+      containerRef.current.documentEditor.getFormFieldInfo()
     )
   }
 
-  if (documenteditor && documenteditor.documentEditor) {
-    documenteditor.documentEditor.selectionChange = () => {
+  if (containerRef.current && containerRef.current.documentEditor) {
+    containerRef.current.documentEditor.selectionChange = () => {
       setTimeout(() => {
         onSelectionChange()
       }, 20)
     }
-
-    documenteditor.documentEditor.enableEditorHistory = true
-  }
-
-  function toolbarButtonClick(arg: any) {
-    switch (arg.item.id) {
-      case "undo":
-        documenteditor.documentEditor.editorHistory.undo()
-        break
-      case "redo":
-        documenteditor.documentEditor.editorHistory.redo()
-        break
-      case "bold":
-        //Toggles the bold of selected content
-        documenteditor.documentEditor.editor.toggleBold()
-        break
-      case "italic":
-        //Toggles the Italic of selected content
-        documenteditor.documentEditor.editor.toggleItalic()
-        break
-      case "underline":
-        //Toggles the underline of selected content
-        documenteditor.documentEditor.editor.toggleUnderline("Single")
-        break
-      case "strikethrough":
-        //Toggles the strikethrough of selected content
-        documenteditor.documentEditor.editor.toggleStrikethrough()
-        break
-      case "subscript":
-        //Toggles the subscript of selected content
-        documenteditor.documentEditor.editor.toggleSubscript()
-        break
-      case "superscript":
-        //Toggles the superscript of selected content
-        documenteditor.documentEditor.editor.toggleSuperscript()
-        break
-      case "paragraph":
-        documenteditor.documentEditor.editor.toggleTextAlignment()
-        break
-      case "bulletlist":
-        documenteditor.documentEditor.editor.applyBullet("\uf0b7", "Symbol")
-        break
-      case "numberlist":
-        documenteditor.documentEditor.editor.applyNumbering("%1)", "UpRoman")
-        break
-      case "image":
-        documenteditor.documentEditor.editor.toggleImage()
-        break
-      case "table":
-        documenteditor.documentEditor.editor.insertTable()
-        break
-      case "comment":
-        documenteditor.documentEditor.editor.insertComment()
-        break
-    }
-  }
-  function AlignmentButtonClick(args: any) {
-    let text: string = args.item.text
-    switch (text) {
-      case "left":
-        //Toggle the Left alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Left")
-        break
-      case "right":
-        //Toggle the Right alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Right")
-        break
-      case "center":
-        //Toggle the Center alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Center")
-        break
-      case "justify":
-        //Toggle the Justify alignment for selected or current paragraph
-        documenteditor.documentEditor.editor.toggleTextAlignment("Justify")
-        break
-      case "ShowParagraphMark":
-        //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
-        documenteditor.documentEditorSettings.showHiddenMarks =
-          !documenteditor.documentEditorSettings.showHiddenMarks
-        break
-    }
-  }
-  function handleButtonClick(arg: any) {
-    toolbarButtonClick(arg)
-    AlignmentButtonClick(arg)
-  }
-  //To change the font Style of selected content
-  function changeFontFamily(args: any): void {
-    documenteditor.documentEditor.selection.characterFormat.fontFamily =
-      args.value
-    documenteditor.documentEditor.focusIn()
-  }
-  //To Change the font Size of selected content
-  function changeFontSize(args: any): void {
-    documenteditor.documentEditor.selection.characterFormat.fontSize =
-      args.value
-    documenteditor.documentEditor.focusIn()
-  }
-  //To Change the font Color of selected content
-  function changeFontColor(args: any) {
-    documenteditor.documentEditor.selection.characterFormat.fontColor =
-      args.currentValue.hex
-    documenteditor.documentEditor.focusIn()
+    containerRef.current.documentEditor.enableEditorHistory = true
   }
 
   // Selection change to retrieve formatting
   function onSelectionChange() {
     if (documenteditor && documenteditor.documentEditor.selection) {
-      var paragraphFormat =
+      const paragraphFormat =
         documenteditor.documentEditor.selection.paragraphFormat
-      var toggleBtnId = ["AlignLeft", "AlignCenter", "AlignRight", "Justify"]
+      const toggleBtnId = ["AlignLeft", "AlignCenter", "AlignRight", "Justify"]
       //Remove toggle state.
-      for (var i = 0; i < toggleBtnId.length; i++) {
+      for (let i = 0; i < toggleBtnId.length; i++) {
         let toggleBtn: HTMLElement = document.getElementById(toggleBtnId[i])
         toggleBtn.classList.remove("e-btn-toggle")
       }
@@ -480,20 +320,19 @@ export default function Documenteditor() {
       } else {
         document.getElementById("Justify").classList.add("e-btn-toggle")
       }
-      // #endregion
     }
   }
 
   function enableDisableFontOptions() {
-    var characterformat =
+    const characterformat =
       documenteditor.documentEditor.selection.characterFormat
-    var properties = [
+    const properties = [
       characterformat.bold,
       characterformat.italic,
       characterformat.underline,
       characterformat.strikethrough,
     ]
-    var toggleBtnId = ["bold", "italic", "underline", "strikethrough"]
+    const toggleBtnId = ["bold", "italic", "underline", "strikethrough"]
     for (let i = 0; i < properties.length; i++) {
       changeActiveState(properties[i], toggleBtnId[i])
     }
@@ -510,92 +349,6 @@ export default function Documenteditor() {
       if (toggleBtn.classList.contains("e-btn-toggle"))
         toggleBtn.classList.remove("e-btn-toggle")
     }
-  }
-
-  let fontStyle: string[] = [
-    "Algerian",
-    "Arial",
-    "Calibri",
-    "Cambria",
-    "Cambria Math",
-    "Candara",
-    "Courier New",
-    "Georgia",
-    "Impact",
-    "Segoe Print",
-    "Segoe Script",
-    "Segoe UI",
-    "Symbol",
-    "Times New Roman",
-    "Verdana",
-    "Windings",
-  ]
-  let fontSize: string[] = [
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "14",
-    "16",
-    "18",
-    "20",
-    "22",
-    "24",
-    "26",
-    "28",
-    "36",
-    "48",
-    "72",
-    "96",
-  ]
-  function contentTemplate1() {
-    return (
-      <ColorPickerComponent
-        showButtons={true}
-        value="#000000"
-        change={changeFontColor}
-      ></ColorPickerComponent>
-    )
-  }
-  function contentTemplate2() {
-    return (
-      <ComboBoxComponent
-        className="font-scroll"
-        dataSource={fontStyle}
-        change={changeFontFamily}
-        width={130}
-        index={2}
-        allowCustom={true}
-        showClearButton={false}
-      ></ComboBoxComponent>
-    )
-  }
-  function contentTemplate3() {
-    return (
-      <div className="toolbar-scroll-parent">
-        <ComboBoxComponent
-          className="toolbar-scroll-child"
-          dataSource={fontSize}
-          change={changeFontSize}
-          width={50}
-          index={2}
-          allowCustom={true}
-          showClearButton={false}
-          popupWidth={65}
-          popupHeight={300}
-        ></ComboBoxComponent>
-      </div>
-    )
-  }
-  function contentTemplate4() {
-    return (
-      <DropDownButtonComponent
-        items={items}
-        iconCss="e-icons e-paragraph-2"
-        select={AlignmentButtonClick}
-      ></DropDownButtonComponent>
-    )
   }
 
   return (
@@ -630,88 +383,18 @@ export default function Documenteditor() {
             paddingTop: "0px",
           }}
         >
-          <ToolbarComponent
-            id="toolbar"
-            clicked={handleButtonClick}
-            width="70vw"
-            className="toolbar-parent"
-          >
-            <ItemsDirective>
-              <ItemDirective id="undo" prefixIcon="e-undo" tooltipText="Undo" />
-              <ItemDirective id="redo" prefixIcon="e-redo" tooltipText="Redo" />
-              <ItemDirective type="Separator" />
-              <ItemDirective template={contentTemplate1} />
-              <ItemDirective type="Separator" />
-              <ItemDirective template={contentTemplate2} />
-              <ItemDirective template={contentTemplate3} />
-              <ItemDirective
-                id="bold"
-                prefixIcon="e-de-ctnr-bold"
-                tooltipText="Bold"
-              />
-              <ItemDirective
-                id="italic"
-                prefixIcon="e-de-ctnr-italic"
-                tooltipText="Italic"
-              />
-              <ItemDirective
-                id="underline"
-                prefixIcon="e-de-ctnr-underline"
-                tooltipText="Underline"
-              />
-              <ItemDirective
-                id="strikethrough"
-                prefixIcon="e-de-ctnr-strikethrough"
-                tooltipText="Strikethrough"
-              />
-              <ItemDirective
-                id="subscript"
-                prefixIcon="e-de-ctnr-subscript"
-                tooltipText="Subscript"
-              />
-              <ItemDirective
-                id="superscript"
-                prefixIcon="e-de-ctnr-superscript"
-                tooltipText="Superscript"
-              />
-              <ItemDirective type="Separator" />
-              <ItemDirective template={contentTemplate4} />
-              <ItemDirective
-                id="bulletlist"
-                prefixIcon="e-list-unordered"
-                tooltipText="List"
-              />
-              <ItemDirective
-                id="numberlist"
-                prefixIcon="e-list-ordered"
-                tooltipText="numberlist"
-              />
-              <ItemDirective
-                id="image"
-                prefixIcon="e-image"
-                tooltipText="Image"
-              />
-              <ItemDirective
-                id="table"
-                prefixIcon="e-table"
-                tooltipText="Table"
-              />
-              <ItemDirective
-                id="comment"
-                prefixIcon="e-comment-add"
-                tooltipText="Comment"
-              />
-            </ItemsDirective>
-          </ToolbarComponent>
+          <DocumenteditorToolbar containerRef={containerRef} />
           <DocumentEditorContainerComponent
             id="container"
-            ref={containerRef}
             height={"100vh"}
             width="70vw"
             serviceUrl="http://localhost:8081/api/documenteditor/"
             showPropertiesPane={false}
             enableToolbar={false}
-            documentEditorSettings={{ formFieldSettings: FormFieldSettings }}
+            documentEditorSettings={{
+              formFieldSettings: MyFormFieldSettings,
+            }}
+            ref={containerRef}
           ></DocumentEditorContainerComponent>
         </div>
         <div
@@ -757,18 +440,17 @@ export default function Documenteditor() {
                 justifyContent: "center",
                 gap: "6px",
               }}
-              onClick={() => showInsertFielddialog(documenteditor)}
+              onClick={() => showInsertFielddialog(containerRef.current)}
             >
               <Formfieldicon />
               Add Field
             </button>
           </div>
           <hr className="border-slate-300 mt-2"></hr>
-          <ListBoxComponent
+          <ListViewComponent
             id="listview"
-            itemTemplate={FormfieldListElement}
+            template={FormfieldListElement}
             ref={listviewRef}
-            allowDragAndDrop={true}
           />
         </div>
       </div>

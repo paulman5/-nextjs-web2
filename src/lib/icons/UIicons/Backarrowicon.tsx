@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export default function Backarrowicon() {
   return (
@@ -7,9 +7,9 @@ export default function Backarrowicon() {
         d="M19 12H5M12 19l-7-7 7-7"
         stroke="#000"
         stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
