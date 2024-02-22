@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useModal() {
-  const [showModal, setShowModal] = useState(false);
-
-  const openModal = () => {
-    setShowModal(true);
-  };
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   const closeModal = () => {
-    setShowModal(false);
+    setShowShareModal(false);
+    setShowSignatureModal(false);
   };
 
+  const openShareModal = () => {
+    setShowShareModal(true);
+    setShowSignatureModal(false);
+  };
 
-  return { showModal, openModal, closeModal };
+  const openSignatureModal = () => {
+    setShowSignatureModal(true);
+    setShowShareModal(false);
+  };
+
+  return { showShareModal, showSignatureModal, openShareModal, openSignatureModal, closeModal };
 }

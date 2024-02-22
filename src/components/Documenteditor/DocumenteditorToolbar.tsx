@@ -1,151 +1,152 @@
-import React, { useContext, useEffect } from "react"
+import React, { Ref, RefObject, useContext, useEffect } from "react";
 import {
   ToolbarComponent,
   ItemDirective,
   ItemsDirective,
-} from "@syncfusion/ej2-react-navigations"
-import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns"
-import { ColorPickerComponent } from "@syncfusion/ej2-react-inputs"
+} from "@syncfusion/ej2-react-navigations";
+import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
+import { ColorPickerComponent } from "@syncfusion/ej2-react-inputs";
 import {
   DropDownButtonComponent,
   ItemModel,
-} from "@syncfusion/ej2-react-splitbuttons"
+} from "@syncfusion/ej2-react-splitbuttons";
 import {
   items,
   fontSize,
   fontStyle,
-} from "../../lib/Documenteditordata/toolbarData"
+} from "../../lib/Documenteditordata/toolbarData";
+import { DocumentEditorContainerComponent } from "@syncfusion/ej2-react-documenteditor";
 
-export default function DocumenteditorToolbar({ containerRef }) {
-  useEffect(() => {
-    setTimeout(() => {
-      console.log("documenteditor initiated", containerRef)
-    }, 5000)
-  }, [])
-
+export default function DocumenteditorToolbar({
+  containerRef,
+}: {
+  containerRef: RefObject<DocumentEditorContainerComponent>;
+}) {
   function toolbarButtonClick(arg: any) {
     // Checking if editor is available
-    if (containerRef !== null) {
+    if (containerRef !== null && containerRef.current !== null) {
       switch (arg.item.id) {
         case "undo":
-          containerRef.current.documentEditor.editorHistory.undo()
-          break
+          containerRef.current.documentEditor.editorHistory.undo();
+          break;
         case "redo":
-          containerRef.current.documentEditor.editorHistory.redo()
-          break
+          containerRef.current.documentEditor.editorHistory.redo();
+          break;
         case "bold":
           //Toggles the bold of selected content
-          containerRef.current.documentEditor.editor.toggleBold()
-          break
+          containerRef.current.documentEditor.editor.toggleBold();
+          break;
         case "italic":
           //Toggles the Italic of selected content
-          containerRef.current.documentEditor.editor.toggleItalic()
-          break
+          containerRef.current.documentEditor.editor.toggleItalic();
+          break;
         case "underline":
           //Toggles the underline of selected content
-          containerRef.current.documentEditor.editor.toggleUnderline("Single")
-          break
+          containerRef.current.documentEditor.editor.toggleUnderline("Single");
+          break;
         case "strikethrough":
           //Toggles the strikethrough of selected content
-          containerRef.current.documentEditor.editor.toggleStrikethrough()
-          break
+          containerRef.current.documentEditor.editor.toggleStrikethrough();
+          break;
         case "subscript":
           //Toggles the subscript of selected content
-          containerRef.current.documentEditor.editor.toggleSubscript()
-          break
+          containerRef.current.documentEditor.editor.toggleSubscript();
+          break;
         case "superscript":
           //Toggles the superscript of selected content
-          containerRef.current.documentEditor.editor.toggleSuperscript()
-          break
+          containerRef.current.documentEditor.editor.toggleSuperscript();
+          break;
         case "paragraph":
-          containerRef.current.documentEditor.editor.toggleTextAlignment()
-          break
+          containerRef.current.documentEditor.editor.toggleTextAlignment();
+          break;
         case "bulletlist":
           containerRef.current.documentEditor.editor.applyBullet(
             "\uf0b7",
             "Symbol"
-          )
-          break
+          );
+          break;
         case "numberlist":
           containerRef.current.documentEditor.editor.applyNumbering(
             "%1)",
             "UpRoman"
-          )
-          break
+          );
+          break;
         case "image":
-          containerRef.current.documentEditor.editor.insertImage()
-          break
+          containerRef.current.documentEditor.editor.insertImage();
+          break;
         case "table":
-          containerRef.current.documentEditor.editor.insertTable()
-          break
+          containerRef.current.documentEditor.editor.insertTable();
+          break;
         case "comment":
-          containerRef.current.documentEditor.editor.insertComment()
-          break
+          containerRef.current.documentEditor.editor.insertComment();
+          break;
       }
     }
   }
   function AlignmentButtonClick(args: any) {
-    let text: string = args.item.text
-    if (containerRef !== null) {
+    let text: string = args.item.text;
+    if (containerRef !== null && containerRef.current !== null) {
       switch (text) {
         case "left":
           //Toggle the Left alignment for selected or current paragraph
-          containerRef.current.documentEditor.editor.toggleTextAlignment("Left")
-          break
+          containerRef.current.documentEditor.editor.toggleTextAlignment(
+            "Left"
+          );
+          break;
         case "right":
           //Toggle the Right alignment for selected or current paragraph
           containerRef.current.documentEditor.editor.toggleTextAlignment(
             "Right"
-          )
-          break
+          );
+          break;
         case "center":
           //Toggle the Center alignment for selected or current paragraph
           containerRef.current.documentEditor.editor.toggleTextAlignment(
             "Center"
-          )
-          break
+          );
+          break;
         case "justify":
           //Toggle the Justify alignment for selected or current paragraph
           containerRef.current.documentEditor.editor.toggleTextAlignment(
             "Justify"
-          )
-          break
+          );
+          break;
         case "ShowParagraphMark":
           //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
           containerRef.current.documentEditorSettings.showHiddenMarks =
-            !containerRef.current.documentEditorSettings.showHiddenMarks
-          break
+            !containerRef.current.documentEditorSettings.showHiddenMarks;
+          break;
       }
     }
   }
 
   function handleButtonClick(arg: any) {
-    toolbarButtonClick(arg)
-    AlignmentButtonClick(arg)
+    toolbarButtonClick(arg);
+    AlignmentButtonClick(arg);
   }
 
   //To change the font Style of selected content
   function changeFontFamily(args: any): void {
-    if (containerRef !== null) {
+    if (containerRef !== null && containerRef.current !== null) {
       containerRef.current.documentEditor.selection.characterFormat.fontFamily =
-        args.value
-      containerRef.current.documentEditor.focusIn()
+        args.value;
+      containerRef.current.documentEditor.focusIn();
     }
   }
   //To Change the font Size of selected content
   function changeFontSize(args: any): void {
-    if (containerRef !== null) {
+    if (containerRef !== null && containerRef.current !== null) {
       containerRef.current.documentEditor.selection.characterFormat.fontSize =
-        args.value
-      containerRef.current.documentEditor.focusIn()
+        args.value;
+      containerRef.current.documentEditor.focusIn();
     }
   }
   //To Change the font Color of selected content
   function changeFontColor(args: any) {
-    if (containerRef !== null) {
+    if (containerRef !== null && containerRef.current !== null) {
       containerRef.current.documentEditor.selection.characterFormat.fontColor =
-        args.currentValue.hex
-      containerRef.current.documentEditor.focusIn()
+        args.currentValue.hex;
+      containerRef.current.documentEditor.focusIn();
     }
   }
 
@@ -156,7 +157,7 @@ export default function DocumenteditorToolbar({ containerRef }) {
         value="#000000"
         change={changeFontColor}
       ></ColorPickerComponent>
-    )
+    );
   }
   function contentTemplate2() {
     return (
@@ -169,7 +170,7 @@ export default function DocumenteditorToolbar({ containerRef }) {
         allowCustom={true}
         showClearButton={false}
       ></ComboBoxComponent>
-    )
+    );
   }
   function contentTemplate3() {
     return (
@@ -186,7 +187,7 @@ export default function DocumenteditorToolbar({ containerRef }) {
           popupHeight={300}
         ></ComboBoxComponent>
       </div>
-    )
+    );
   }
   function contentTemplate4() {
     return (
@@ -195,7 +196,7 @@ export default function DocumenteditorToolbar({ containerRef }) {
         iconCss="e-icons e-paragraph-2"
         select={AlignmentButtonClick}
       ></DropDownButtonComponent>
-    )
+    );
   }
 
   return (
@@ -264,5 +265,5 @@ export default function DocumenteditorToolbar({ containerRef }) {
         />
       </ItemsDirective>
     </ToolbarComponent>
-  )
+  );
 }

@@ -1,0 +1,9 @@
+/* .Backarrow:hover {
+  transform: rotateX(10deg);
+  transition: 200ms;
+} */
+
+.Backarrow div:hover {
+  transform: translateX(-20%);
+  transition: 350ms;
+}
